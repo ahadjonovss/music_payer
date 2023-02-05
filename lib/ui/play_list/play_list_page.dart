@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:music_payer/bloc/music_player_bloc/music_player_bloc.dart';
+import 'package:music_payer/data/models/music_model.dart';
 import 'package:music_payer/ui/play_list/widgets/music_item.dart';
 
-class PlayListPage extends StatefulWidget {
-  const PlayListPage({Key? key}) : super(key: key);
+class PlayListPage extends StatelessWidget {
+   PlayListPage({Key? key}) : super(key: key);
 
-  @override
-  State<PlayListPage> createState() => _PlayListPageState();
-}
-
-class _PlayListPageState extends State<PlayListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,19 +16,13 @@ class _PlayListPageState extends State<PlayListPage> {
         title: const Text("Play List"),),
       body: Padding(
         padding: const EdgeInsets.all(4),
-        child: ReorderableListView.builder(
+        child: ListView.builder(
           physics: const BouncingScrollPhysics(),
             itemBuilder: (context, index) {
-              return MusicItem(key: UniqueKey(),);
+              return MusicItem(musicModel:context.read<MusicPlayerBloc>().state.musics[index],index:index);
             },
-            itemCount: 15,
-            onReorder: (oldIndex, newIndex) {
-              setState(() {
-                // final index = newIndex > oldIndex ? newIndex - 1 : newIndex;
-                // final user = users.removeAt(oldIndex);
-                // users.insert(index, user);
-              });
-            },),
+            itemCount: context.read<MusicPlayerBloc>().state.musics.length,
+        ),
       ),
     );
   }

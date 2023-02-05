@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:music_payer/bloc/music_player_bloc/music_player_bloc.dart';
+import 'package:music_payer/data/models/music_model.dart';
 import 'package:music_payer/ui/single_music/single_music_page.dart';
-import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 import 'package:page_transition/page_transition.dart';
 class MusicItem extends StatelessWidget {
-  const MusicItem({Key? key}) : super(key: key);
+  MusicModel musicModel;
+  int index;
+   MusicItem({required this.musicModel,required this.index,Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.push(context, PageTransition(type: PageTransitionType.bottomToTop, child:   SingleMusicPage(),duration: const Duration(milliseconds: 200)));
+      onTap: () async {
+        context.read<MusicPlayerBloc>().add(InitMusicEvent(index: index));
+        Navigator.push(context, PageTransition(type: PageTransitionType.bottomToTop, child:   SingleMusicPage(index: index,musicModel: musicModel),duration: const Duration(milliseconds: 300)));
       },
       child: Container(
         margin:const  EdgeInsets.only(bottom: 12),
@@ -18,15 +23,27 @@ class MusicItem extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Image.network("https://avatars.mds.yandex.net/i?id=89e8bb990974a1d4a42be9e5a899714b8bcc3f73-5210406-images-thumbs&n=13"),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const  [
-                Text("Happier Than Ever",style: TextStyle(fontSize: 18,color: Colors.white),),
-                Text("Billie Eilish - Happier Than Ever",style: TextStyle(color: Colors.white),)
+            Container(
+              height: 50,
+              width: 50,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(musicModel.image),
+                  fit: BoxFit.cover
+                )
+              ),
+            ),
+            SizedBox(
+              width: 200,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children:   [
+                  Text(musicModel.name,style: TextStyle(fontSize: 18,color: Colors.white),),
+                  Text(musicModel.author,style: TextStyle(color: Colors.white),)
 
-              ],
+                ],
+              ),
             ),
             IconButton(onPressed: (){}, icon: Icon(Icons.favorite,color: Colors.green,)),
             IconButton(onPressed: (){}, icon: Icon(Icons.menu,color: Colors.white,)),
